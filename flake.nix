@@ -5,17 +5,23 @@
     zig.url = "github:mitchellh/zig-overlay";
     zls.url = "github:zigtools/zls/0.13.0";
     zon2nix.url = "github:MidstallSoftware/zon2nix";
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, nixpkgs, flake-utils, ... }@inputs:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        overlays = [ inputs.zig.overlays.default ];
+        overlays = [ inputs.zig.overlays.default (import inputs.rust-overlay) ];
         pkgs = import nixpkgs { inherit system overlays; };
 
         zigPkg = pkgs.zigpkgs."0.13.0"; # keep in sync with zls
         zlsPkg = inputs.zls.packages.${system}.default;
         zon2nix = inputs.zon2nix.packages.${system}.default;
+
+        rustAttrs = import ./rust { inherit pkgs; };
 
       in
       {
@@ -28,6 +34,8 @@
                 zigPkg
                 zlsPkg
                 zon2nix
+
+                rustAttrs.rust-shell
 
                 pkgs.just
               ];
