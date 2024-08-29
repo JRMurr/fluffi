@@ -5,11 +5,25 @@ const Step = std.Build.Step;
 fn buildRust(b: *std.Build, exe: *Step.Compile) void {
     const cargo_cmd = b.addSystemCommand(&.{ "cargo", "build", "--release" });
     cargo_cmd.setCwd(b.path("./rust/"));
+    // https://github.com/coolaj86/rust-hello-cross-zig
+    // cargo_cmd.setEnvironmentVariable("CC", "zig cc");
 
     // exe.linkLibC();
     exe.addObjectFile(b.path("./rust/target/release/librust.a"));
 
     exe.step.dependOn(&cargo_cmd.step);
+}
+
+fn buildPython(b: *std.Build, exe: *Step.Compile, target: std.Build.ResolvedTarget, optimize: std.builtin.OptimizeMode) void {
+    _ = optimize;
+    const cpython_dep = b.dependency("cpython", .{ .optimize = .ReleaseSmall, .target = target });
+    // const cpython = cpython_dep.module("cpython");
+    const lib_python = cpython_dep.artifact("lib-python");
+
+    exe.linkLibrary(lib_python);
+
+    exe.linkLibCpp(); // When we use python rust libunwind got sad with undefined symbol
+    // exe.root_module.addImport("cpython", cpython);
 }
 
 // Although this function looks imperative, note that its job is to
@@ -34,6 +48,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
+    buildPython(b, exe, target, optimize);
     buildRust(b, exe);
 
     // This declares intent for the executable to be installed into the
@@ -64,6 +79,10 @@ pub fn build(b: *std.Build) void {
     const run_step = b.step("run", "Run the app");
     run_step.dependOn(&run_cmd.step);
 
+    buildTests(b, target, optimize);
+}
+
+fn buildTests(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.builtin.OptimizeMode) void {
     const exe_unit_tests = b.addTest(.{
         .root_source_file = b.path("zig/main.zig"),
         .target = target,
