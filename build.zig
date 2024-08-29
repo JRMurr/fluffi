@@ -15,15 +15,14 @@ fn buildRust(b: *std.Build, exe: *Step.Compile) void {
 }
 
 fn buildPython(b: *std.Build, exe: *Step.Compile, target: std.Build.ResolvedTarget, optimize: std.builtin.OptimizeMode) void {
-    _ = optimize;
-    const cpython_dep = b.dependency("cpython", .{ .optimize = .ReleaseSmall, .target = target });
-    // const cpython = cpython_dep.module("cpython");
-    const lib_python = cpython_dep.artifact("lib-python");
+    const cpython_dep = b.dependency("cpython", .{ .optimize = optimize, .target = target });
+    const python = cpython_dep.module("python");
+    const lib_python = cpython_dep.artifact("python");
 
     exe.linkLibrary(lib_python);
 
     exe.linkLibCpp(); // When we use python rust libunwind got sad with undefined symbol
-    // exe.root_module.addImport("cpython", cpython);
+    exe.root_module.addImport("python", python);
 }
 
 // Although this function looks imperative, note that its job is to

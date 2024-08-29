@@ -24,10 +24,11 @@
     // internet connectivity.
 
     // zig fetch --save https://github.com/JRMurr/cpython/archive/<commit>.tar.gz
+    // zig fetch --save=cpython <path>
     .dependencies = .{
         .cpython = .{
-            .url = "https://github.com/JRMurr/cpython/archive/9c48d6bfce1b7eea0fea0b73aad4899b09cf2824.tar.gz",
-            .hash = "12204a3039c6bd74bec5be5f74e53aa2b8f8b561e19317ab9b202e39772578fc3256",
+            .url = "https://github.com/JRMurr/cpython/archive/b952b664eb00c3dd372bda2833715e0a35caf2a1.tar.gz",
+            .hash = "12200efc75d1bf997e5213d98882b9c7cbccc76d8cc7c06ef752ced9f61bc0473cb2",
         },
     },
     .paths = .{
