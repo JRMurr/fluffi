@@ -5,3 +5,7 @@ result
 
 .zig-cache
 zig-out
+
+
+# generated output
+java-build

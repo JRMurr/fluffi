@@ -25,6 +25,22 @@ fn buildPython(b: *std.Build, exe: *Step.Compile, target: std.Build.ResolvedTarg
     exe.root_module.addImport("python", python);
 }
 
+fn translateJava(b: *std.Build, gen_step: *Step, target: std.Build.ResolvedTarget, optimize: std.builtin.OptimizeMode) void {
+    const step = b.addTranslateC(.{
+        .target = target,
+        .optimize = optimize,
+        .root_source_file = b.path("java-build/include/jni.h"),
+    });
+
+    const includes = b.path("java-build/include").getPath(b);
+
+    step.addIncludeDir(includes);
+
+    const install = b.addInstallFileWithDir(step.getOutput(), .{ .custom = "gen" }, "jni.zig");
+
+    gen_step.dependOn(&install.step);
+}
+
 // Although this function looks imperative, note that its job is to
 // declaratively construct a build graph that will be executed by an external
 // runner.
@@ -77,6 +93,11 @@ pub fn build(b: *std.Build) void {
     // This will evaluate the `run` step rather than the default, which is "install".
     const run_step = b.step("run", "Run the app");
     run_step.dependOn(&run_cmd.step);
+
+    const gen_step = b.step("gen", "generate files");
+    gen_step.dependOn(b.getInstallStep());
+
+    translateJava(b, gen_step, target, optimize);
 
     buildTests(b, target, optimize);
 }

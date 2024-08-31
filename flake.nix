@@ -23,6 +23,10 @@
 
         rustAttrs = import ./rust { inherit pkgs; };
 
+
+        java = pkgs.jdk22;
+        # ${java}/include has the headers we need
+
       in
       {
         formatter = pkgs.nixfmt-rfc-style;
@@ -35,6 +39,8 @@
                 zlsPkg
                 zon2nix
 
+                java
+
                 rustAttrs.rust-shell
 
                 pkgs.just
@@ -42,6 +48,8 @@
           };
         };
 
-        # packages = { default = pkgs.hello; };
+        packages = {
+          inherit java;
+        };
       });
 }
