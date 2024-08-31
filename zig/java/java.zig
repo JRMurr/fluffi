@@ -31,7 +31,7 @@ pub fn basic() !void {
 
     _ = JNI.JNI_GetDefaultJavaVMInitArgs(&args);
 
-    JNI.JNI_CreateJavaVM(&jvm, &env, &args);
+    _ = JNI.JNI_CreateJavaVM(&jvm, &env, &args);
 
     std.debug.print("JVM: {}\tENV: {}\n", .{ jvm, env });
 }

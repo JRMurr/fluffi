@@ -25,6 +25,13 @@ fn buildPython(b: *std.Build, exe: *Step.Compile, target: std.Build.ResolvedTarg
     exe.root_module.addImport("python", python);
 }
 
+fn linkJava(b: *std.Build, exe: *Step.Compile) void {
+    // exe.addLibraryPath(b.path("java-build/lib/openjdk/lib"));
+    exe.addLibraryPath(b.path("java-build/lib/openjdk/lib/server"));
+
+    exe.linkSystemLibrary("jvm");
+}
+
 fn translateJava(b: *std.Build, gen_step: *Step, target: std.Build.ResolvedTarget, optimize: std.builtin.OptimizeMode) void {
     const step = b.addTranslateC(.{
         .target = target,
@@ -65,6 +72,7 @@ pub fn build(b: *std.Build) void {
 
     buildPython(b, exe, target, optimize);
     buildRust(b, exe);
+    linkJava(b, exe);
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default
