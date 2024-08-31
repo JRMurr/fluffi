@@ -27,8 +27,8 @@
     // zig fetch --save=cpython <path>
     .dependencies = .{
         .cpython = .{
-            .url = "https://github.com/JRMurr/cpython/archive/b952b664eb00c3dd372bda2833715e0a35caf2a1.tar.gz",
-            .hash = "12200efc75d1bf997e5213d98882b9c7cbccc76d8cc7c06ef752ced9f61bc0473cb2",
+            .url = "https://github.com/JRMurr/cpython/archive/80cd314ce076114895671d2a571ad528592737da.tar.gz",
+            .hash = "1220a04af23bdb98617a333ebcdee6c7e2c6e2680cedeaf6cfbc254d577ac628edf9",
         },
     },
     .paths = .{
