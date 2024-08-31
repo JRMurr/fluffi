@@ -356,7 +356,7 @@ pub const struct_JNIInvokeInterface_ = extern struct {
     GetEnv: ?*const fn ([*c]JavaVM, [*c]?*anyopaque, jint) callconv(.C) jint = @import("std").mem.zeroes(?*const fn ([*c]JavaVM, [*c]?*anyopaque, jint) callconv(.C) jint),
     AttachCurrentThreadAsDaemon: ?*const fn ([*c]JavaVM, [*c]?*anyopaque, ?*anyopaque) callconv(.C) jint = @import("std").mem.zeroes(?*const fn ([*c]JavaVM, [*c]?*anyopaque, ?*anyopaque) callconv(.C) jint),
 };
-pub const JavaVM = [*c]const struct_JNIInvokeInterface_;
+pub const JavaVM = *const struct_JNIInvokeInterface_;
 pub const struct_JNINativeInterface_ = extern struct {
     reserved0: ?*anyopaque = @import("std").mem.zeroes(?*anyopaque),
     reserved1: ?*anyopaque = @import("std").mem.zeroes(?*anyopaque),
@@ -618,8 +618,8 @@ pub const struct_JavaVMAttachArgs = extern struct {
     group: jobject = @import("std").mem.zeroes(jobject),
 };
 pub const JavaVMAttachArgs = struct_JavaVMAttachArgs;
-pub extern fn JNI_GetDefaultJavaVMInitArgs(args: ?*anyopaque) jint;
-pub extern fn JNI_CreateJavaVM(pvm: [*c][*c]JavaVM, penv: [*c]?*anyopaque, args: ?*anyopaque) jint;
+pub extern fn JNI_GetDefaultJavaVMInitArgs(args: *JavaVMInitArgs) jint;
+pub extern fn JNI_CreateJavaVM(pvm: **JavaVM, penv: **JNIEnv, args: *JavaVMInitArgs) jint;
 pub extern fn JNI_GetCreatedJavaVMs([*c][*c]JavaVM, jsize, [*c]jsize) jint;
 pub extern fn JNI_OnLoad(vm: [*c]JavaVM, reserved: ?*anyopaque) jint;
 pub extern fn JNI_OnUnload(vm: [*c]JavaVM, reserved: ?*anyopaque) void;
