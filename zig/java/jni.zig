@@ -65,6 +65,20 @@ pub const JNIEnv = extern struct {
         const version = self.interface.GetVersion(self);
         return @bitCast(version);
     }
+
+    pub fn findClass(self: *Self, class_name: [*:0]const u8) jclass {
+        return self.interface.FindClass(self, class_name);
+    }
+
+    pub fn getStaticMethodId(self: *Self, class: jclass, meth_name: [*:0]const u8, sig: [*:0]const u8) jmethodID {
+        return self.interface.GetStaticMethodID(self, class, meth_name, sig);
+    }
+
+    // TODO: make call static/normal method wrapper for all types with args
+
+    pub fn callStaticVoidMethod(self: *Self, class: jclass, method_id: jmethodID) void {
+        return self.interface.CallStaticVoidMethod(self, class, method_id);
+    }
 };
 
 pub const JavaVM = extern struct {
