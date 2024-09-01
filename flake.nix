@@ -44,6 +44,7 @@
                 rustAttrs.rust-shell
 
                 pkgs.just
+                pkgs.time
               ];
           };
         };
