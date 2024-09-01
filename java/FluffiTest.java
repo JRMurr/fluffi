@@ -1,6 +1,6 @@
 class FluffiTest
 {
-    public static void main(String []args)
+    public static void test_fn()
     {
         System.out.println("TEST PROG");
     }
