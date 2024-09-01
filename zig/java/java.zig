@@ -6,13 +6,16 @@ const java_options = @import("java_options");
 pub const CLASS_PATH: []const u8 = java_options.class_path;
 
 pub fn basic() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    const allocator = gpa.allocator();
+    // var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    // const allocator = gpa.allocator();
 
     // https://docs.oracle.com/en/java/javase/21/docs/specs/jni/invocation.html
 
-    var jvm = try allocator.create(JNI.JavaVM);
-    var env = try allocator.create(JNI.JNIEnv);
+    // var jvm = try allocator.create(JNI.JavaVM_);
+    // const env = try allocator.create(JNI.JNIEnv_);
+
+    var jvm: *JNI.JavaVM = undefined;
+    var env: *JNI.JNIEnv = undefined;
 
     // const class_path_opt = JNI.JavaVMOption{
     //     // TODO: real class path
@@ -41,11 +44,23 @@ pub fn basic() !void {
         .ignoreUnrecognized = @intFromBool(false),
     };
 
-    const create_res = JNI.JNI_CreateJavaVM(@constCast(&jvm), @constCast(&env), &args);
+    // const env_ptr: [*c]*anyopaque = @ptrCast(@constCast(&env));
 
-    std.debug.print("create_res: {}\tenv.GetVersion: {}\n", .{ create_res, env.GetVersion });
+    // const create_res = JNI.JNI_CreateJavaVM(@constCast(&jvm), @constCast(env_ptr), &args);
 
-    std.debug.print("GetVersion: {}", .{env.GetVersion(env)});
+    const create_res = JNI.JNI_CreateJavaVM(
+        &jvm,
+        &env,
+        &args,
+    );
+
+    std.debug.print("create_res: {}\tenv: {}\n", .{ create_res, env });
+
+    std.debug.print("GetVersion: {}", .{env.getJNIVersion()});
+
+    // const get_version = env.functions.*.GetVersion.?;
+
+    // std.debug.print("GetVersion: {}", .{get_version(&env.functions)});
 
     // std.debug.print("env: {}\n", .{env});
 

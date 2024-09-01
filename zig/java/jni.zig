@@ -50,8 +50,40 @@ pub const Constansts = struct {
     pub const JNI_ABORT = @as(c_int, 2);
 };
 
-pub const JavaVM = *const Gen.struct_JNIInvokeInterface_;
-// pub const JNIEnv = *const Gen.struct_JNINativeInterface_;
+pub const JNIVersion = packed struct {
+    minor: u16,
+    major: u16,
+};
+
+// https://github.com/zig-java/jui/blob/main/src/types.zig
+pub const JNIEnv = extern struct {
+    const Self = @This();
+
+    interface: *const struct_JNINativeInterface_,
+
+    pub fn getJNIVersion(self: *Self) JNIVersion {
+        const version = self.interface.GetVersion(self);
+        return @bitCast(version);
+    }
+};
+
+pub const JavaVM = extern struct {
+    const Self = @This();
+
+    interface: *const JNIInvokeInterface,
+};
+
+const JNIInvokeInterface = extern struct {
+    reserved0: ?*anyopaque,
+    reserved1: ?*anyopaque,
+    reserved2: ?*anyopaque,
+
+    DestroyJavaVM: *const fn ([*c]JavaVM) callconv(.C) jint,
+    AttachCurrentThread: *const fn ([*c]JavaVM, [*c]?*anyopaque, ?*anyopaque) callconv(.C) jint,
+    DetachCurrentThread: *const fn ([*c]JavaVM) callconv(.C) jint,
+    GetEnv: *const fn ([*c]JavaVM, [*c]?*anyopaque, jint) callconv(.C) jint,
+    AttachCurrentThreadAsDaemon: *const fn ([*c]JavaVM, [*c]?*anyopaque, ?*anyopaque) callconv(.C) jint,
+};
 
 pub const JavaVMOption = Gen.struct_JavaVMOption;
 
@@ -63,9 +95,10 @@ pub const JavaVMInitArgs = extern struct {
 };
 
 pub extern fn JNI_GetDefaultJavaVMInitArgs(args: *Gen.JavaVMInitArgs) jint;
-pub extern fn JNI_CreateJavaVM(pvm: **JavaVM, penv: **JNIEnv, args: *JavaVMInitArgs) jint;
+// pub extern fn JNI_CreateJavaVM(pvm: **JavaVM_, penv: [*c]*anyopaque, args: *JavaVMInitArgs) jint;
+pub extern fn JNI_CreateJavaVM(**JavaVM, **JNIEnv, *anyopaque) callconv(.C) jint;
 
-pub const JNIEnv = extern struct {
+pub const struct_JNINativeInterface_ = extern struct {
     reserved0: ?*anyopaque,
     reserved1: ?*anyopaque,
     reserved2: ?*anyopaque,
