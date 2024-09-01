@@ -7,5 +7,10 @@ result
 zig-out
 
 
+
+# java classes
+*.class
+
+
 # generated output
 java-build

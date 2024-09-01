@@ -25,6 +25,26 @@ fn buildPython(b: *std.Build, exe: *Step.Compile, target: std.Build.ResolvedTarg
     exe.root_module.addImport("python", python);
 }
 
+fn buildJava(b: *std.Build, exe: *Step.Compile) void {
+    const java_cmd = b.addSystemCommand(&.{ "javac", "FluffiTest.java", "-d", "gen" });
+    java_cmd.setCwd(b.path("./java/"));
+
+    exe.step.dependOn(&java_cmd.step);
+
+    // copy generated classes to output
+    const java_classes = b.addInstallDirectory(.{
+        .source_dir = b.path("java/gen"),
+        .install_dir = .{ .custom = "java" },
+        .install_subdir = "classes",
+    });
+    exe.step.dependOn(&java_classes.step);
+
+    // add `java_options` modulue with class path set
+    const java_options = b.addOptions();
+    java_options.addOption([]const u8, "class_path", b.fmt("{s}/java/classes", .{b.install_path}));
+    exe.root_module.addOptions("java_options", java_options);
+}
+
 fn linkJava(b: *std.Build, exe: *Step.Compile) void {
     // exe.addLibraryPath(b.path("java-build/lib/openjdk/lib"));
     exe.addLibraryPath(b.path("java-build/lib/openjdk/lib/server"));
@@ -72,6 +92,8 @@ pub fn build(b: *std.Build) void {
 
     buildPython(b, exe, target, optimize);
     buildRust(b, exe);
+    buildJava(b, exe);
+
     linkJava(b, exe);
 
     // This declares intent for the executable to be installed into the
