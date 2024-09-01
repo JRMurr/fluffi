@@ -63,7 +63,7 @@ pub const JavaVMInitArgs = extern struct {
 };
 
 pub extern fn JNI_GetDefaultJavaVMInitArgs(args: *Gen.JavaVMInitArgs) jint;
-pub extern fn JNI_CreateJavaVM(pvm: *JavaVM, penv: *JNIEnv, args: *JavaVMInitArgs) jint;
+pub extern fn JNI_CreateJavaVM(pvm: **JavaVM, penv: **JNIEnv, args: *JavaVMInitArgs) jint;
 
 pub const JNIEnv = extern struct {
     reserved0: ?*anyopaque,

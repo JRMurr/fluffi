@@ -6,13 +6,13 @@ const java_options = @import("java_options");
 pub const CLASS_PATH: []const u8 = java_options.class_path;
 
 pub fn basic() !void {
-    // var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    // const allocator = gpa.allocator();
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const allocator = gpa.allocator();
 
     // https://docs.oracle.com/en/java/javase/21/docs/specs/jni/invocation.html
 
-    var jvm: JNI.JavaVM = undefined;
-    var env: JNI.JNIEnv = undefined;
+    var jvm = try allocator.create(JNI.JavaVM);
+    var env = try allocator.create(JNI.JNIEnv);
 
     // const class_path_opt = JNI.JavaVMOption{
     //     // TODO: real class path
@@ -41,15 +41,17 @@ pub fn basic() !void {
         .ignoreUnrecognized = @intFromBool(false),
     };
 
-    const create_res = JNI.JNI_CreateJavaVM(&jvm, &env, &args);
+    const create_res = JNI.JNI_CreateJavaVM(@constCast(&jvm), @constCast(&env), &args);
 
-    std.debug.print("create_res: {}\n", .{create_res});
+    std.debug.print("create_res: {}\tenv.GetVersion: {}\n", .{ create_res, env.GetVersion });
+
+    std.debug.print("GetVersion: {}", .{env.GetVersion(env)});
 
     // std.debug.print("env: {}\n", .{env});
 
-    const class = env.FindClass(&env, "FluffiTest");
+    // const class = env.FindClass(&env, "FluffiTest");
 
-    std.debug.print("class: {any}\n", .{class});
+    // std.debug.print("class: {any}\n", .{class});
 
     // // javap -s on class file to get the sig string
     // const method_id = env.GetStaticMethodID(&env, class, "test_fn", "()V");
