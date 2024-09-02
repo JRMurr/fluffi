@@ -27,6 +27,7 @@
         java = pkgs.jdk22;
         # ${java}/include has the headers we need
 
+        node = pkgs.nodejs_22;
       in
       {
         formatter = pkgs.nixfmt-rfc-style;
@@ -41,6 +42,8 @@
 
                 java
 
+                # node
+
                 rustAttrs.rust-shell
 
                 pkgs.just
@@ -51,6 +54,7 @@
 
         packages = {
           inherit java;
+          v8 = node.libv8; # statically compile v8 
         };
       });
 }
